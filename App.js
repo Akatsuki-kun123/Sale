@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
-import ScanPage from './Components/ScanPage';
+import LoginPage from './Components/Login/LoginPage';
 
 export default function App() {
   return (
-    <ScanPage></ScanPage>
+    <LoginPage></LoginPage>
   );
 }
 

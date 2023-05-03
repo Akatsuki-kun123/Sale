@@ -13,9 +13,9 @@ import {
 } from 'react-native';
 import Scanner from './Scanner';
 
-export default function ScanPage() {
-  const screen = Dimensions.get("screen");
+const screen = Dimensions.get("screen");
 
+export default function ScanPage() {
   return (
     <SafeAreaView style={styles.container}>
       <Image style={styles.logo}

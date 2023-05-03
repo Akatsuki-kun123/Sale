@@ -15,16 +15,23 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.Sale"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.Sale"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "scheme": [
+      "Sale",
+      "fb785078819670957"
+    ]
   }
 }
+

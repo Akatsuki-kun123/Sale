@@ -12,6 +12,7 @@ import {
   TextInput
 } from 'react-native';
 import Scanner from './Scanner';
+import { IMAGE_FOLDER } from "@env"
 
 const screen = Dimensions.get("screen");
 
@@ -19,7 +20,7 @@ export default function ScanPage() {
   return (
     <SafeAreaView style={styles.container}>
       <Image style={styles.logo}
-        source={require("../assets/Logo.png")}>
+        source={require(`${IMAGE_FOLDER}/Logo.png`)}>
       </Image>
 
       <View style={styles.QRscanner}>
@@ -34,7 +35,7 @@ export default function ScanPage() {
         }}>
         <TouchableOpacity>
               <Image style={styles.scanBtn}
-                source={require("../assets/Scan.png")}>
+                source={require(`${IMAGE_FOLDER}/Scan.png`)}>
               </Image>
         </TouchableOpacity>
 
@@ -89,7 +90,7 @@ export default function ScanPage() {
 
         <TouchableOpacity>
               <Image style={styles.enterBtn}
-                source={require("../assets/Enter.png")}>
+                source={require(`${IMAGE_FOLDER}/Enter.png`)}>
               </Image>
         </TouchableOpacity>
       </View>

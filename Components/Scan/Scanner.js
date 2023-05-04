@@ -7,6 +7,7 @@ import {
   Button
 } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import { IMAGE_FOLDER } from "@env"
 
 export default function Scanner() {
   const [hasPermission, setHasPermission] = useState(null);

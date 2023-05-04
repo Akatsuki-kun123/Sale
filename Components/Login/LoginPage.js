@@ -11,7 +11,7 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import ScanPage from '../ScanPage';
+import ScanPage from '../Scan/ScanPage';
 import { CLIENT_ID }from "@env"
 
 WebBrowser.maybeCompleteAuthSession();
@@ -25,7 +25,7 @@ export default function LoginPage() {
     if (response && response.type === "success" && response.authentication) {
         (async () => {
             const userInfoResponse = await fetch(
-                `https://graph.facebook.com/me?access_token=${response.authentication.accessToken}&fields=id,name,picture.type(large)`
+              `https://graph.facebook.com/me?access_token=${response.authentication.accessToken}&fields=id,name,picture.type(large)`
             );
             const userInfo = await userInfoResponse.json();
             setUser(userInfo);

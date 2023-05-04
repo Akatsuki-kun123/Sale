@@ -12,7 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import ScanPage from '../Scan/ScanPage';
-import { CLIENT_ID }from "@env"
+import { CLIENT_ID } from "@env"
 
 WebBrowser.maybeCompleteAuthSession();
 

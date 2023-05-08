@@ -1,95 +1,281 @@
-import { useState, useEffect } from 'react';
-import * as Facebook from "expo-auth-session/providers/facebook";
-import * as WebBrowser from "expo-web-browser";
-import { 
-  StyleSheet, 
-  Text, 
+import React, { useState, useEffect } from "react";
+import {
   View,
-  Button,
-  Image,
-  SafeAreaView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
   StatusBar,
-  Platform,
-} from 'react-native';
-import ScanPage from '../Scan/ScanPage';
-import { CLIENT_ID } from "@env"
+  SafeAreaView,
+  Dimensions,
+} from "react-native";
+import Checkbox from "expo-checkbox";
 
-WebBrowser.maybeCompleteAuthSession();
+import Icon from "react-native-vector-icons/Feather";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import * as LocalAuthentication from "expo-local-authentication";
 
-export default function LoginPage() {
-  const [user, setUser] = useState(null);
-  const [request, response, promptAsync] = Facebook.useAuthRequest({
-    clientId: CLIENT_ID
+const Login = ({ navigation }) => {
+  const [isChecked, setChecked] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
+
+  const ValidateLogin = Yup.object().shape({
+    password: Yup.string()
+      .min(8, "Pssword must me greater that 8 charachters!")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Must be characters, at least one letter, one number and one special character"
+      )
+      .required("Required"),
+    email: Yup.string().email("Invalid email").required("Required"),
   });
+
+  const authenticate = async () => {
+    const auth = LocalAuthentication.authenticateAsync({
+      promptMessage: "Authenticate with Fingerprint",
+      fallbackLabel: "Enter password",
+      cancelLabel: "Cancel",
+      requireConfirmation: false,
+    });
+
+    auth.then((result) => {
+      setIsAuthenticated(result.success);
+
+      if (result.success) {
+        navigation.navigate("Home");
+      }
+    });
+  };
+
   useEffect(() => {
-    if (response && response.type === "success" && response.authentication) {
-        (async () => {
-            const userInfoResponse = await fetch(
-              `https://graph.facebook.com/me?access_token=${response.authentication.accessToken}&fields=id,name,picture.type(large)`
-            );
-            const userInfo = await userInfoResponse.json();
-            setUser(userInfo);
-        })();
-    }
-  }, [response]);
+    (async () => {
+      const compatible = await LocalAuthentication.hasHardwareAsync();
+      setIsBiometricSupported(compatible);
+    })();
+  });
 
-  const handlePressAsync = async () => {
-    const result = await promptAsync();
-
-    if (result.type !== "success") {
-        alert("Something went wrong");
-        return 0;
-    }
-  }
-
-  function Profile({ user }) {
-    return (
-        <View style={styles.container}>
-            <View style={styles.profile}>
-                <Image source={{ uri: user.picture.data.url }} style={styles.image}></Image>
-                <Text style={styles.name}>{ user.name }</Text>
-                <Text>ID: { user.id }</Text>
-            </View>
-            
-            <ScanPage></ScanPage>
-        </View>
-    );
-  }
+  const checked = () => {
+    setChecked(false);
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      { user ? (
-            <Profile user={user}/>
+    <SafeAreaView
+      style={{ marginTop: StatusBar.currentHeight, backgroundColor: "#7696db" }}
+    >
+      <View
+        style={{
+          backgroundColor: "white",
+          borderBottomLeftRadius: 100,
+          borderBottomRightRadius: 100,
+          height: Dimensions.get("window").height * 0.8,
+        }}
+      >
+        <View
+          style={{
+            padding: 40,
+          }}
+        >
+          <View style={{ alignItems: "center" }}>
+            <Text style={{ fontSize: 25, fontWeight: "bold" }}>Login</Text>
+            <Text style={{ fontSize: 18, marginTop: 10 }}>
+              By Signing in you are agreeing
+            </Text>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                fontSize: 18,
+                marginTop: 5,
+              }}
+            >
+              <Text>Our</Text>
+              <Text style={{ color: "blue" }}>Terms and privacy policy</Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginTop: 25,
+              justifyContent: "center",
+            }}
+          >
+            <Text
+              style={{
+                textDecorationLine: "underline",
+                marginRight: 10,
+                fontWeight: "bold",
+                fontSize: 18,
+                color: "blue",
+              }}
+            >
+              Login
+            </Text>
+            <Text style={{ fontSize: 18 }}>Register </Text>
+          </View>
+          <View style={{ marginTop: 30 }}>
+            <Formik
+              initialValues={{ email: "", password: "" }}
+              validateOnMount={true}
+              validationSchema={ValidateLogin}
+              onSubmit={(values) => navigation.navigate("Home")}
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                touched,
+                values,
+                errors,
+                isValid,
+              }) => (
+                <View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      borderBottomWidth: 1,
+                      borderBottomColor: "#808080",
+                      marginBottom: 5,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Icon name="mail" size={18} color="#808080" />
+                    <TextInput
+                      style={{ marginLeft: 10 }}
+                      onChangeText={handleChange("email")}
+                      onBlur={handleBlur("email")}
+                      value={values.email}
+                      placeholder="Email Address"
+                    />
+                  </View>
+                  <View style={{ marginBottom: 20 }}>
+                    {errors.email && touched.email ? (
+                      <Text style={{ color: "red", fontSize: 15 }}>
+                        {errors.email}
+                      </Text>
+                    ) : null}
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+
+                      borderBottomWidth: 1,
+                      borderBottomColor: "#808080",
+                      marginBottom: 5,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Icon name="lock" size={22} color="#808080" />
+                    <TextInput
+                      style={{ marginLeft: 10 }}
+                      placeholder="Password"
+                      onChangeText={handleChange("password")}
+                      onBlur={handleBlur("password")}
+                      value={values.password}
+                    />
+                  </View>
+                  <View style={{ marginBottom: 20 }}>
+                    {errors.password && touched.password ? (
+                      <Text style={{ color: "red", fontSize: 15 }}>
+                        {errors.password}
+                      </Text>
+                    ) : null}
+                  </View>
+
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        marginBottom: 30,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Checkbox value={isChecked} onValueChange={checked} />
+                      <Text style={{ marginLeft: 5 }}>Remember Password</Text>
+                    </View>
+
+                    <Text style={{ color: "blue" }}>Forgot Password</Text>
+                  </View>
+
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "#597ac2",
+                      borderRadius: 10,
+                      height: 35,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginBottom: 15,
+                    }}
+                    onPress={handleSubmit}
+                  >
+                    <Text style={{ color: "white" }}>Login</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </Formik>
+
+            <Text style={{ alignSelf: "center" }}>or connect with</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                marginTop: 10,
+              }}
+            >
+              <Ionicons name="logo-facebook" size={24} color="blue" />
+              <Ionicons name="logo-instagram" size={24} color="blue" />
+              <Ionicons name="logo-pinterest" size={24} color="red" />
+              <Ionicons name="logo-linkedin" size={24} color="#5679c4" />
+            </View>
+          </View>
+        </View>
+      </View>
+
+      <View
+        style={{
+          alignItems: "center",
+          height: Dimensions.get("window").height * 0.2,
+        }}
+      >
+        {isBiometricSupported ? (
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <TouchableOpacity
+              onPress={authenticate}
+              style={{
+                height: 80,
+                width: 80,
+                borderRadius: 10,
+                backgroundColor: "#5c87e6",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Ionicons name="finger-print-outline" size={40} color="white" />
+            </TouchableOpacity>
+
+            <Text style={{ color: "white" }}>Login with touch id</Text>
+          </View>
         ) : (
-            <Button
-                disabled={!request}
-                title="Sign in with Facebook"
-                onPress={handlePressAsync}
-            />
-        )
-      }
+          <View
+            style={{ alignItems: "center", flex: 1, justifyContent: "center" }}
+          >
+            <Text style={{ color: "white", fontSize: 20 }}>Welcome Back!</Text>
+          </View>
+        )}
+      </View>
     </SafeAreaView>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 20
-  },
-
-  profile: {
-    alignItems: "center",
-  },
-
-  name: {
-    fontSize: 20,
-  },
-
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-});
+export default Login;

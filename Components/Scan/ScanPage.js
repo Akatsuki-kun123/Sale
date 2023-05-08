@@ -12,7 +12,7 @@ import {
   TextInput
 } from 'react-native';
 import Scanner from './Scanner';
-import { IMAGE_FOLDER } from "@env"
+import { IMAGE_FOLDER } from '@env';
 
 const screen = Dimensions.get("screen");
 

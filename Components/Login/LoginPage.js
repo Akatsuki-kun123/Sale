@@ -29,7 +29,6 @@ export default function LoginPage() {
             );
             const userInfo = await userInfoResponse.json();
             setUser(userInfo);
-            console.log(userInfo);
         })();
     }
   }, [response]);

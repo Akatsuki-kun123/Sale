@@ -1,16 +1,15 @@
 import React from 'react';
 import { 
-  Dimensions,
-  StyleSheet, 
   Text, 
   View,
-  SafeAreaView,
-  StatusBar,
-  Platform,
   Image,
+  TextInput,
+  Dimensions,
+  StyleSheet, 
+  SafeAreaView,
   TouchableOpacity,
-  TextInput
 } from 'react-native';
+
 import Scanner from './Scanner';
 import { IMAGE_FOLDER } from '@env';
 
@@ -19,10 +18,6 @@ const screen = Dimensions.get("screen");
 export default function ScanPage() {
   return (
     <SafeAreaView style={styles.container}>
-      <Image style={styles.logo}
-        source={require(`${IMAGE_FOLDER}/Logo.png`)}>
-      </Image>
-
       <View style={styles.QRscanner}>
         <Scanner></Scanner>
       </View>
@@ -54,26 +49,19 @@ export default function ScanPage() {
           marginRight: "10%",
           marginLeft: "10%",
           marginTop: 100,
+          flexDirection: "row"
         }}>
-        <Text>
-          <Text 
-            style={{
-              marginLeft: "5%",
-              fontSize: 20,
-              fontWeight: "bold",
-            }}>
-              OR
-          </Text>
+          <View style={{ flex: 0.5, flexDirection: "row" }}>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                OR  
+            </Text>
+          </View>
 
-          <Text
-            style={{
-              marginRight: "10%",
-              marginLeft: "10%",
-              fontSize: 15,
-            }}>
-            Enter codes manually
-          </Text>
-        </Text>
+          <View style={{ justifyContent:'space-evenly' }}>
+            <Text style={{ fontSize: 20}}>
+              Enter codes manually
+            </Text>
+          </View>
       </View>
 
       <View style={styles.QRcontainer}>
@@ -85,7 +73,6 @@ export default function ScanPage() {
           }}
 
           placeholder="  Enter code here"> 
-
         </TextInput>
 
         <TouchableOpacity>
@@ -102,37 +89,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 20
-  },
-
-  logo: {
-    width: screen.height * 20 / 100,
-    height: screen.height * 20 / 100,
   },
 
   scanBtn: {
-    width: screen.height * 20 / 100,
-    height: screen.height * 20 / 100,
-  },
-
-  enterBtn: {
-    width: screen.height * 10 / 100, 
+    width: screen.height * 10 / 100,
     height: screen.height * 10 / 100,
   },
 
+  enterBtn: {
+    width: screen.height * 5 / 100, 
+    height: screen.height * 5 / 100,
+  },
+
   QRscanner: {
-    marginTop: 20,
     alignSelf: "center",
-    width: "70%", 
-    height: "34%",
+    width: 350, 
+    height: 350,
   },
 
   QRcontainer: {
-    width: "80%",
-    height: "5%",
-    marginRight: "10%",
-    marginLeft: "10%",
-    marginTop: 20,
+    width: screen.width * 80 / 100,
+    height: screen.height * 5 / 100,
+    marginTop: 10,
+    marginLeft: screen.width * 10 / 100,
     flexDirection: "row"
   },
 });

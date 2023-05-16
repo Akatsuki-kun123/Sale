@@ -1,64 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View,
-  SafeAreaView,
-  Button
-} from 'react-native';
+import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
-export default function Scanner() {
-  const [hasPermission, setHasPermission] = useState(null);
+export default function App() {
   const [scanned, setScanned] = useState(false);
-  const [text, setText] = useState("Not scanned yet");
+  const [hasPermission, setHasPermission] = useState(null);
 
-  const askForCameraPermission = () => {
-    (async () => { 
-        const { status } = await BarCodeScanner.requestPermissionsAsync();
-        setHasPermission(status == "granted");
-    }) ()
-  }
+  useEffect(() => {
+    const getBarCodeScannerPermissions = async () => {
+      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      setHasPermission(status === 'granted');
+    };
 
-  if (hasPermission === null) {
-    return (
-      <View style={styles.container}>
-        <Text>Requesting for camera permission</Text>
-      </View>
-    )
-  }
-
-  if (hasPermission === false) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ margin: 10 }}>
-          No access to camera
-        </Text>
-
-        <Button title={ "Allow Camera" } onPress={() => askForCameraPermission()}></Button>
-      </View>
-    )
-  }
+    getBarCodeScannerPermissions();
+  }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    setText(data);
+    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+  };
+
+  if (hasPermission === null) {
+    return <Text>Requesting for camera permission</Text>;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
   }
 
-  useEffect(() => {
-    askForCameraPermission();
-  }, []);
-
   return (
-    <SafeAreaView style={styles.container}>
-      <BarCodeScanner 
+    <View style={styles.container}>
+      <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={{ height: "90%", width: "90%" }} />
-
-      <Text style={{ fontSize: 16, margin: 20 }}>{ data }</Text>
-
-      {scanned && <Button title={ "Scan again" } onPress={() => setScanned(false)} color="tomato" />}
-    </SafeAreaView>
+        style={StyleSheet.absoluteFillObject}
+      />
+      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+    </View>
   );
 }
 

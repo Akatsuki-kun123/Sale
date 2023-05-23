@@ -11,17 +11,22 @@ import { IMAGE_FOLDER } from '@env';
   
 export default function ProductInfoPage(props) {
     const [data, setData] = useState(props.data);
+    const [name, setName] = useState(null);
     const [image, setImage] = useState(null);
     const [links, setLinks] = useState(null);
 
     useEffect(() => {
         try {
-            setImage(data.image)
+            setName(data.name);
         } catch (error) {
             try {
-                setLinks(data.links)
+                setImage(data.image);
             } catch (error) {
-                
+                try {
+                    setLinks(data.links)
+                } catch (error) {
+                    
+                }
             }
         }
     }, []);
@@ -30,9 +35,14 @@ export default function ProductInfoPage(props) {
         <SafeAreaView style={styles.container}>
             <View style={{ alignSelf: "center", alignItems: "center", }}>
                 {image ? (
-                    <Image style={styles.image}
-                        source={{ uri: data.image}}>
-                    </Image>
+                    <>
+                        <Image style={styles.image}
+                            source={{ uri: data.image }}>
+                        </Image>
+                        <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                            { name }
+                        </Text>
+                    </>
                 ) : (
                     <Image style={styles.image}
                         source={require(`${IMAGE_FOLDER}/No_Image.png`)}>
@@ -43,7 +53,7 @@ export default function ProductInfoPage(props) {
             <View style={{ marginTop: 20, alignSelf: "center", alignItems: "center", }}>
                 {links ? (
                     <View>
-                        <Text style={{ fontSize: 20, fontWeight: "bold"}}>
+                        <Text style={{ fontSize: 20, fontWeight: "bold" }}>
                             Related links
                         </Text>
 
@@ -58,7 +68,7 @@ export default function ProductInfoPage(props) {
                         </Text>
                     </View>
                 ) : (
-                    <Text style={{ fontSize: 20, fontWeight: "bold"}}>
+                    <Text style={{ fontSize: 20, fontWeight: "bold" }}>
                         No related links found!
                     </Text>
                 )}
@@ -75,7 +85,7 @@ const styles = StyleSheet.create({
 
     image: {
         width: 300,
-        height: 300,
+        height: 369,
     }
 });
   

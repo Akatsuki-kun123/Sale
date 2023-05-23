@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import * as Facebook from 'expo-auth-session/providers/facebook';
-import * as WebBrowser from 'expo-web-browser';
 import { 
   Text, 
   View,
@@ -13,8 +11,13 @@ import {
   SafeAreaView,
   TouchableOpacity
 } from 'react-native';
-import ScanPage from '../Scan/ScanPage';
+
+import * as WebBrowser from 'expo-web-browser';
+import * as Facebook from 'expo-auth-session/providers/facebook';
+
 import { CLIENT_ID } from '@env';
+
+import ScanPage from '../Scan/ScanPage';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -31,7 +34,7 @@ export default function LoginPage() {
     if (response && response.type === "success" && response.authentication) {
         (async () => {
             const userInfoResponse = await fetch(
-              `https://graph.facebook.com/me?access_token=${response.authentication.accessToken}&fields=id,name,picture.type(large)`
+              `https://graph.facebook.com/me?access_token=${response.authentication.accessToken}&fields=name`
             );
             const userInfo = await userInfoResponse.json();
             setUser(userInfo);
@@ -53,7 +56,6 @@ export default function LoginPage() {
         <View style={styles.container}>
             <View style={styles.profile}>
                 <Text style={styles.name}>{ user.name }</Text>
-                <Text>ID: { user.id }</Text>
             </View>
             
             <ScanPage></ScanPage>

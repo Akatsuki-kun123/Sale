@@ -1,84 +1,64 @@
-import { useState, useEffect } from 'react';
-import * as Facebook from 'expo-auth-session/providers/facebook';
-import * as WebBrowser from 'expo-web-browser';
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import React, { useState, useEffect } from 'react';
 import { 
-  StyleSheet, 
   Text, 
   View,
   Button,
-  Image,
+  StyleSheet, 
   SafeAreaView,
-  StatusBar,
-  Platform,
-  TextInput,
 } from 'react-native';
-import ScanPage from '../Scan/ScanPage';
-import { CLIENT_ID } from '@env';
 
-WebBrowser.maybeCompleteAuthSession();
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
-export default function LoginPage() {
-  const [user, setUser] = useState(null);
-  const [request, response, promptAsync] = Facebook.useAuthRequest({
-    clientId: CLIENT_ID
-  });
-  useEffect(() => {
-    if (response && response.type === "success" && response.authentication) {
-        (async () => {
-            const userInfoResponse = await fetch(
-              `https://graph.facebook.com/me?access_token=${response.authentication.accessToken}&fields=id,name,picture.type(large)`
-            );
-            const userInfo = await userInfoResponse.json();
-            setUser(userInfo);
-        })();
-    }
-  }, [response]);
+export default function Scanner() {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [scanned, setScanned] = useState(false);
+  const [text, setText] = useState("Not scanned yet");
 
-  const handlePressAsync = async () => {
-    const result = await promptAsync();
-
-    if (result.type !== "success") {
-        alert("Something went wrong");
-        return 0;
-    }
+  const askForCameraPermission = () => {
+    (async () => { 
+        const { status } = await BarCodeScanner.requestPermissionsAsync();
+        setHasPermission(status == 'granted');
+    }) ()
   }
 
-  function Profile({ user }) {
+  if (hasPermission === null) {
     return (
-        <View style={styles.container}>
-            <View style={styles.profile}>
-                <Image source={{ uri: user.picture.data.url }} style={styles.image}></Image>
-                <Text style={styles.name}>{ user.name }</Text>
-                <Text>ID: { user.id }</Text>
-            </View>
-            
-            <ScanPage></ScanPage>
-        </View>
-    );
+      <View style={styles.container}>
+        <Text>Requesting for camera permission</Text>
+      </View>
+    )
   }
+
+  if (hasPermission === false) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ margin: 10 }}>
+          No access to camera
+        </Text>
+
+        <Button title={ "Allow Camera" } onPress={() => askForCameraPermission()}></Button>
+      </View>
+    )
+  }
+
+  const handleBarCodeScanned = ({ type, data }) => {
+    setScanned(true);
+    setText(data);
+  }
+
+  useEffect(() => {
+    askForCameraPermission();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      { user ? (
-            <Profile user={user}/>
-        ) : (
-          <View>
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeNumber}
-              value={number}
-              placeholder="Username"
-            />
+      <BarCodeScanner 
+        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        style={{ height: "90%", width: "90%" }} />
 
-            <Button
-                disabled={!request}
-                title="Sign in with Facebook"
-                onPress={handlePressAsync}
-            />
-          </View>
-        )
-      }
+      <Text style={{ fontSize: 16, margin: 20 }}>{ data }</Text>
+
+      {scanned && <Button title={ "Scan again" } onPress={() => setScanned(false)} color="tomato" />}
     </SafeAreaView>
   );
 }
@@ -86,21 +66,8 @@ export default function LoginPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 20
-  },
-
-  profile: {
+    backgroundColor: '#C9C9C9',
     alignItems: "center",
-  },
-
-  name: {
-    fontSize: 20,
-  },
-
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    justifyContent: "center",
   },
 });

@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 
 import LoginPage from './Components/Login/LoginPage';
-import ScanPage from './Components/Scan/ScanPage';
 
 const screen = Dimensions.get("screen");
 
@@ -18,7 +17,8 @@ export default function App() {
       <Image style={styles.logo}
         source={require(`./assets/Logo.png`)}>
       </Image>
-      <ScanPage></ScanPage>
+
+      <LoginPage></LoginPage>
     </SafeAreaView>
   );
 }

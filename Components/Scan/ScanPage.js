@@ -49,15 +49,15 @@ export default function ScanPage() {
         </Text>
       </View>
 
-      <View style={{ marginRight: "10%", marginLeft: "10%", marginTop: 100, flexDirection: "row", }}>
-        <View style={{ flex: 0.5, flexDirection: "row" }}>
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+      <View style={{ marginLeft: "15%", marginTop: 100, flexDirection: "row", }}>
+        <View style={{ flex: 0.35, flexDirection: "row" }}>
+          <Text style={{ fontSize: 30, fontWeight: "bold" }}>
             OR  
           </Text>
         </View>
 
         <View style={{ justifyContent: 'space-evenly' }}>
-          <Text style={{ fontSize: 20}}>
+          <Text style={{ fontSize: 30}}>
             Enter codes manually
           </Text>
         </View>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     height: screen.height * 5 / 100,
 
     marginTop: 10,
-    marginLeft: screen.width * 5 / 100,
+    marginLeft: screen.width * 10 / 100,
 
     flexDirection: "row"
   },
